@@ -1,13 +1,23 @@
+"""Importamos todos los paquetes a utilizar, puede referirse a 
+setup.py para informacion de los modulos utilizados."""
+
 from random import randrange
 import numpy as np
 import pandas as pd
 import datetime as dt
 import pyttsx3
 
+# Iniciamos el motor de speech y se estable la velocidad del habla
 speaker = pyttsx3.init()
 speaker.setProperty("rate", 130)
 
 class Practice():
+    """La clase Practice contiene las variables relacionadas a las palabras
+    que el estudiante ha aprendido, almacena las palabras que conforman 
+    la lista para aprender, las notas obtenidas en cada nivel de juego,
+    el resultado final de la sesion y las variables intermedias de cada proceso.
+    
+    """
     def __init__(self):
         self.L6 = []
         self.download = abrir("docs/Word_list.xlsx")
@@ -19,26 +29,31 @@ class Practice():
             }
 
     def working(self, answer, results, words):
-        if answer != "alto":
+        if not("alto" in answer):
             if len(words[4]) >= 150:
+                print("\t\t Nivel 5\n")
                 results["L5"] = engine(words[4], self.L6, words[3],results["L5"])
-                answer = input("Escribe 'alto' si quieres terminar: ")
+                answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[3]) >= 125:
+                print("\t\t Nivel 4\n")
                 results["L4"] = engine(words[3], words[4], words[2],results["L4"])
-                answer = input("Escribe 'alto' si quieres terminar: ")
+                answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[2]) >= 100:
+                print("\t\t Nivel 3\n")
                 results["L3"] = engine(words[2], words[3], words[1],results["L3"])
-                answer = input("Escribe 'alto' si quieres terminar: ")
+                answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[1]) >= 75:
+                print("\t\t Nivel 2\n")
                 results["L2"] = engine(words[1], words[2], words[0],results["L2"])
-                answer = input("Escribe 'alto' si quieres terminar: ")
+                answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[0]) >= 50:
+                print("\t\t Nivel 1\n")
                 results["L1"] = engine(words[0], words[1], words[0],results["L1"])
-                answer = input("Escribe 'alto' si quieres terminar: ")
+                answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             else:
                 for i in self.download:
@@ -63,13 +78,14 @@ class Practice():
             for i in self.nota:
                 if i != 0.0:
                     c += i
-                    n+=1
+                    n +=1
                 else:
                     pass        
 
             self.final = words[0] + words[1] + words[2] + words[3] + words[4] + words[5] + words[6] + words[7] + words[8] + words[9]
-            print("Tu resultado es: ", round(c/n), "de 100")
-            print("Felicidades! Las palabras que has aprendido son: ", self.L6)
+            print("\tTu resultado es: ", round(c/n), "de 100\n")
+            if self.L6 != []:
+                print("\tFelicidades! Las palabras que has aprendido son: ", self.L6)
             guardar(self.final, self.nota, round(c/n))
 
 
@@ -126,12 +142,12 @@ def engine(lista_inicial, lista_avance,lista_retraso, dict_resul):
         word = lista_inicial.pop(n)
         speaker.say(word[0])
         speaker.runAndWait()
-        print(f"{i+1}) Write the translate for: {word[0]}")
-        key = input("Traduccion: > ").lower()
+        print(f"\t{i+1}) Write the translate for: {word[0]}")
+        key = input("\tTraduccion: > ").lower()
         if key == word[1]:
-            print("Es correcto.")
+            print("""\tEs correcto.""")
             if str(word[2]) != "nan":
-                print("Otra traduccion es: ", word[2])
+                print("\tOtra traduccion es: ", word[2])
             else:
                 pass
             dict_resul[0] += 1
@@ -139,17 +155,17 @@ def engine(lista_inicial, lista_avance,lista_retraso, dict_resul):
             lista_avance.append(word)
             input()
         elif key == word[2] and str(word[2]) != "nan":
-            print("Es correcto.")
-            print("Otra traduccion es: ", word[1])
+            print("\tEs correcto.")
+            print("\tOtra traduccion es: ", word[1])
             dict_resul[0] += 1
             word[3] += 1
             lista_avance.append(word)
             input()
         else:
             if str(word[2]) != "nan":
-                print("Te equivocaste, la traduccion es: ", word[1]," o ", word[2])
+                print("\tTe equivocaste, la traduccion es: ", word[1]," o ", word[2])
             else:
-                print("Te equivocaste, la traduccion es: ", word[1])
+                print("\tTe equivocaste, la traduccion es: ", word[1])
                 
             dict_resul[1] += 1
             lista_retraso.append(word)
@@ -175,4 +191,4 @@ def guardar(lista, resultados, final):
     inter_df = inter_df.set_index("Fecha")
     dfr = dfr.append(inter_df)
     dfr.to_excel("docs/Resultados.xlsx")
-    print("Guardado tus resutados con exito")
+    print("\tGuardado tus resutados con exito")
