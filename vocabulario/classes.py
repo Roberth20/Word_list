@@ -11,16 +11,17 @@ import pyttsx3
 speaker = pyttsx3.init()
 speaker.setProperty("rate", 130)
 
-class Practice():
+class Practice(object):
     """La clase Practice contiene las variables relacionadas a las palabras
     que el estudiante ha aprendido, almacena las palabras que conforman 
     la lista para aprender, las notas obtenidas en cada nivel de juego,
     el resultado final de la sesion y las variables intermedias de cada proceso.
     
     """
-    def __init__(self):
+    def __init__(self, doc_ref):
+        self.banks = {1:"/docs/Word_list.xlsx", 2:"docs/Word_list2.xlsx"}
         self.L6 = []
-        self.download = abrir("docs/Word_list.xlsx")
+        self.download = abrir(self.banks.get(int(doc_ref)))
         self.words = download(self.download)
         self.nota = []
         self.final = []
@@ -184,7 +185,7 @@ def abrir(documento):
 
 def guardar(lista, resultados, final):
     df_lista = pd.DataFrame(lista)
-    df_lista.to_excel("docs/Word_list.xlsx",index_label="ID")
+    df_lista.to_excel(self.banks.get(int(doc_ref)),index_label="ID")
     dfr = pd.read_excel("docs/Resultados.xlsx", index_col="Fecha")
     resul = [[pd.to_datetime(dt.date.today()), resultados[0], resultados[1], resultados[2], resultados[3], resultados[4],final]]
     inter_df = pd.DataFrame(resul, columns = ["Fecha","Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Final"])
