@@ -19,7 +19,7 @@ class Practice(object):
     
     """
     def __init__(self, doc_ref):
-        self.banks = {1:"/docs/Word_list.xlsx", 2:"docs/Word_list2.xlsx"}
+        self.banks = {1:"docs/Word_list.xlsx", 2:"docs/Word_list2.xlsx"}
         self.L6 = []
         self.download = abrir(self.banks.get(int(doc_ref)))
         self.words = download(self.download)
