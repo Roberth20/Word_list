@@ -19,9 +19,10 @@ class Practice(object):
     
     """
     def __init__(self, doc_ref):
+        self.doc_ref = doc_ref
         self.banks = {1:"docs/Word_list.xlsx", 2:"docs/Word_list2.xlsx"}
         self.L6 = []
-        self.download = abrir(self.banks.get(int(doc_ref)))
+        self.download = abrir(self.banks.get(int(self.doc_ref)))
         self.words = download(self.download)
         self.nota = []
         self.final = []
@@ -32,27 +33,27 @@ class Practice(object):
     def working(self, answer, results, words):
         if not("alto" in answer):
             if len(words[4]) >= 150:
-                print("\t\t Nivel 5\n")
+                print("\n\t\t Nivel 5\n")
                 results["L5"] = engine(words[4], self.L6, words[3],results["L5"])
                 answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[3]) >= 125:
-                print("\t\t Nivel 4\n")
+                print("\n\t\t Nivel 4\n")
                 results["L4"] = engine(words[3], words[4], words[2],results["L4"])
                 answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[2]) >= 100:
-                print("\t\t Nivel 3\n")
+                print("\n\t\t Nivel 3\n")
                 results["L3"] = engine(words[2], words[3], words[1],results["L3"])
                 answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[1]) >= 75:
-                print("\t\t Nivel 2\n")
+                print("\n\t\t Nivel 2\n")
                 results["L2"] = engine(words[1], words[2], words[0],results["L2"])
                 answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             elif len(words[0]) >= 50:
-                print("\t\t Nivel 1\n")
+                print("\n\t\t Nivel 1\n")
                 results["L1"] = engine(words[0], words[1], words[0],results["L1"])
                 answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
@@ -87,7 +88,7 @@ class Practice(object):
             print("\tTu resultado es: ", round(c/n), "de 100\n")
             if self.L6 != []:
                 print("\tFelicidades! Las palabras que has aprendido son: ", self.L6)
-            guardar(self.final, self.nota, round(c/n))
+            guardar(self.final, self.nota, round(c/n), self.banks.get(int(self.doc_ref)))
 
 
 def download(lista):
@@ -145,7 +146,7 @@ def engine(lista_inicial, lista_avance,lista_retraso, dict_resul):
         speaker.runAndWait()
         print(f"\t{i+1}) Write the translate for: {word[0]}")
         key = input("\tTraduccion: > ").lower()
-        if key == word[1]:
+        if word[1] in key:
             print("""\tEs correcto.""")
             if str(word[2]) != "nan":
                 print("\tOtra traduccion es: ", word[2])
@@ -155,7 +156,7 @@ def engine(lista_inicial, lista_avance,lista_retraso, dict_resul):
             word[3] += 1
             lista_avance.append(word)
             input()
-        elif key == word[2] and str(word[2]) != "nan":
+        elif str(word[2]) in key and str(word[2]) != "nan":
             print("\tEs correcto.")
             print("\tOtra traduccion es: ", word[1])
             dict_resul[0] += 1
@@ -183,9 +184,9 @@ def abrir(documento):
     Dict.fillna("")
     return Dict.values.tolist()
 
-def guardar(lista, resultados, final):
+def guardar(lista, resultados, final, doc):
     df_lista = pd.DataFrame(lista)
-    df_lista.to_excel(self.banks.get(int(doc_ref)),index_label="ID")
+    df_lista.to_excel(doc,index_label="ID")
     dfr = pd.read_excel("docs/Resultados.xlsx", index_col="Fecha")
     resul = [[pd.to_datetime(dt.date.today()), resultados[0], resultados[1], resultados[2], resultados[3], resultados[4],final]]
     inter_df = pd.DataFrame(resul, columns = ["Fecha","Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Final"])
