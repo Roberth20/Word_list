@@ -19,18 +19,32 @@ class Practice(object):
     
     """
     def __init__(self, doc_ref):
+        """Aqui se da inicio a todas las variables que se necesitan"""
+        # Variable de eleccion de lista de palabras
         self.doc_ref = doc_ref
+        # "Banco de palabras"
         self.banks = {1:"docs/Word_list.xlsx", 2:"docs/Word_list2.xlsx"}
+        # Lista para guardar los resultados de palabras aprendidas
         self.L6 = []
+        # Apertura y descarga de las palabras
         self.download = abrir(self.banks.get(int(self.doc_ref)))
+        # Aqui utilizamos la funcion download para repartir las palabras en 
+        # las listas correspondientes
         self.words = download(self.download)
+        # Inicio de la variable que almacena la nota obtenida
         self.nota = []
+        # Inicio de la variable para la nota final
         self.final = []
+        # Diccionario con los puntajes de cada nivel al iniciar el juego
         self.results = {
             "L1":[0,0],"L2":[0,0],"L3":[0,0],"L4":[0,0],"L5":[0,0]
             }
 
     def working(self, answer, results, words):
+        """Este metodo provee el mecanismo de seleccion de niveles, asi como
+        los pasos a seguir una vez que no se quiera jugar mas, entre ellos, el calculo
+        de la nota."""
+        # Inicio del ciclo para seleccion de niveles
         if not("alto" in answer):
             if len(words[4]) >= 150:
                 print("\n\t\t Nivel 5\n")
@@ -58,6 +72,8 @@ class Practice(object):
                 answer = input("\tEscribe 'alto' si quieres terminar: ")
                 self.working(answer, results, words)
             else:
+                # En caso que ningun nivel sea jugable, aqui se realiza el rellenado
+                # de palabras del nivel 1
                 for i in self.download:
                     if int(i[3]) == 0:
                         if len(self.words[0]) < 50:
@@ -70,6 +86,7 @@ class Practice(object):
                         print("En la lista de palabras no hay mas palabras nuevas")
                         
         else:
+        # Una vez terminada la sesion se calculan los resultados
             for value in results:
                 if results[value] != [0,0]:
                     self.nota.append(round((results[value][0]/ np.asarray(results[value]).sum())*100))
@@ -86,6 +103,7 @@ class Practice(object):
 
             self.final = words[0] + words[1] + words[2] + words[3] + words[4] + words[5] + words[6] + words[7] + words[8] + words[9]
             print("\tTu resultado es: ", round(c/n), "de 100\n")
+            # Una vez calculados, se decide si hay palabras aprendidas antes de guardar la sesion
             if self.L6 != []:
                 print("\tFelicidades! Las palabras que has aprendido son: ", self.L6)
             guardar(self.final, self.nota, round(c/n), self.banks.get(int(self.doc_ref)))
@@ -93,6 +111,8 @@ class Practice(object):
 
 def download(lista):
     """Distribucion de todas las palabras en listas para trabajar."""
+    # Se definen todas las listas, las mayusculas corresponden a las palabras "activas"
+    # Y las minusculas a las palabras en espera
     L1 = []
     L2 = []
     L3 = []
@@ -103,7 +123,8 @@ def download(lista):
     l3 = []
     l4 = []
     l5 = []
-
+    # Se habilita un ciclo para cada fila de la lista de palabras y se las 
+    # distribuye en cada lista de nivel
     for i in lista:
         if int(i[3]) == 0:
             if len(L1) < 50:
@@ -138,14 +159,19 @@ def download(lista):
 
 def engine(lista_inicial, lista_avance,lista_retraso, dict_resul):
     """Realiza la dinamica de estudio """
+    # Se calcula el numero de repeticiones del ciclo, el cual sera exactamente el 
+    # numero de palabras iniciales
     vueltas = len(lista_inicial)    
     for i in range(vueltas):
+    	# Se elige una palabra en aleatorio y se remueve de la lista
         n = randrange(0, len(lista_inicial))
         word = lista_inicial.pop(n)
+        # Comunicacion de la palabra
         speaker.say(word[0])
         speaker.runAndWait()
         print(f"\t{i+1}) Write the translate for: {word[0]}")
         key = input("\tTraduccion: > ").lower()
+        # Arbol de decision para determinar si la palabra escrita es correcta
         if word[1] in key:
             print("""\tEs correcto.""")
             if str(word[2]) != "nan":
@@ -185,8 +211,10 @@ def abrir(documento):
     return Dict.values.tolist()
 
 def guardar(lista, resultados, final, doc):
+    """Esta funcion se encarga de guardar todos lo resultados"""
     df_lista = pd.DataFrame(lista)
     df_lista.to_excel(doc,index_label="ID")
+    
     dfr = pd.read_excel("docs/Resultados.xlsx", index_col="Fecha")
     resul = [[pd.to_datetime(dt.date.today()), resultados[0], resultados[1], resultados[2], resultados[3], resultados[4],final]]
     inter_df = pd.DataFrame(resul, columns = ["Fecha","Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Final"])
